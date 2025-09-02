@@ -22,7 +22,7 @@ class GameLogicService
         $this->words = $words;
         $this->maxRounds = $maxRounds;
 
-        // for task 1, anser is set on initiation. Would move for task 3.
+        // for task 1, answer is set on initiation. Would move for task 3.
         $this->answer = strtoupper($words[array_rand($words)]);
     }
 
@@ -100,5 +100,15 @@ class GameLogicService
     public function getRemainingRounds(): int
     {
         return $this->maxRounds - $this->currentRound;
+    }
+
+    public function getCurrentRound(): int
+    {
+        return $this->currentRound;
+    }
+
+    public function getMaxRounds(): int
+    {
+        return $this->maxRounds;
     }
 }
