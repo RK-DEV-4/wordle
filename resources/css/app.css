@@ -19,5 +19,48 @@ body,
 }
 
 .main_container {
-    @apply h-full w-full flex justify-center items-center bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100
+    @apply relative h-full w-full flex flex-col justify-start items-center bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100
+}
+
+.guess_board {
+    @apply flex flex-col items-center justify-center w-full max-w-[500px] h-[360px] md:h-[420px] md:my-8 md:mx-auto p-2.5;
+}
+
+.guess_tiles {
+    @apply flex items-center justify-center text-xl size-12 md:size-16 border border-neutral-400 text-3xl font-bold;
+}
+
+.keyboard {
+    @apply flex flex-col gap-2;
+}
+
+.keyboard_row {
+    @apply flex justify-center gap-1.5;
+}
+
+.keyboard_key {
+    @apply min-w-7 md:min-w-11 h-14 flex items-center justify-center px-1.5 md:px-3 py-2 rounded font-bold uppercase bg-neutral-300 dark:bg-neutral-500 text-neutral-900 dark:text-neutral-100 font-bold;
+}
+
+.status_correct {
+    @apply text-neutral-100 border-none;
+    background-color: rgb(83, 141, 78);
+}
+
+.status_present {
+    @apply text-neutral-100 border-none;
+    background-color: rgb(181, 159, 59);
+}
+
+.status_missing {
+    @apply text-neutral-100 border-none;
+    background-color: rgb(58, 58, 60);
+}
+
+.message_container {
+    @apply flex items-center justify-center bg-neutral-900 dark:bg-white text-neutral-100 dark:text-neutral-900 absolute top-20 py-2 px-4 rounded-sm;
+}
+
+.message_container.error {
+    @apply text-red-600;
 }
