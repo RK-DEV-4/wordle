@@ -64,3 +64,7 @@ body,
 .message_container.error {
     @apply text-red-600;
 }
+
+.reset_button {
+    @apply h-full w-full max-w-5xl flex justify-end items-center p-4;
+}
