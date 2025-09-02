@@ -47,6 +47,9 @@ class WordleController extends Controller
             'currentRound' => $game->getCurrentRound(),
             'isWin' => $game->isWin($guess),
             'isLoss' => $game->isLoss($guess),
+            'endMessage' => $game->isWin($guess) 
+                ? $game->getWinResponse() 
+                : $game->getAnswer()
         ]);
     }
 }

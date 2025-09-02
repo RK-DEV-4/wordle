@@ -14,6 +14,7 @@
     let currentGuess = "";
     // Used to determined status of game. 'win', 'loss' are end game status', undefined means the game is ongoing
     let gameStatus = undefined;
+    let endMessage = undefined;
 
     // Status key values to assign classes based on reults from backend
     let statuses = {
@@ -24,6 +25,8 @@
     };
 
     let errors = {};
+
+    const storageKey = "wordle_storage";
 
     function handleKeyDown(e) {
         // Ensures CMD+key doesn't enter trigger input
@@ -59,13 +62,18 @@
                 : (data.isLoss
                     ? 'loss'
                     : undefined
-                )
+                );
+            
+            endMessage = gameStatus ? data.endMessage : null
 
             currentGuess = '';
             currentRound = data.currentRound;
         } catch (err) {
             if (err.response?.status === 422) {
-                errors = err.response.data.errors
+                errors = err.response.data.errors;
+                setTimeout(() => {
+                    errors = {}
+                }, 3000)
             } else {
                 console.error(err);
             }
@@ -76,9 +84,41 @@
         let formattedResult = currentGuess.split("").map((letter, i) => ({ letter: letter, value: result[i]}));
         results.push(formattedResult);
         results = results; 
+        setLocalStorage();
+    }
+
+    function setLocalStorage() {
+        // storing object with date to determine if it is valid
+        const storageObject = {
+            guesses: guesses,
+            results: results,
+            expires: new Date().toDateString()
+        };
+        localStorage.setItem(storageKey, JSON.stringify(storageObject));
+    }
+
+    function getLocalStorage() {
+        const storedData = localStorage.getItem(storageKey);
+        if (!storedData) return;
+
+        const data = JSON.parse(storedData);
+        const date = new Date().toDateString();
+
+        // clearing storage if stored date is not today 
+        if (date !== data.expires) {
+            clearLocalStorage();
+            return;
+        }
+        results = data.results;
+        guesses = data.guesses;
+    }
+
+    function clearLocalStorage() {
+        localStorage.removeItem(storageKey);
     }
 
     onMount(() => {
+        getLocalStorage();
         window.addEventListener("keydown", handleKeyDown);
     });
 
@@ -88,19 +128,24 @@
 </script>
 
 <div class="main_container">
-    {#if Object.keys(errors).length > 0}
+    <!-- {#if Object.keys(errors).length > 0} -->
         <div 
             class="message_container"
-            class:hidden={Object.keys(errors).length === 0 || gameStatus}
+            class:!opacity-100={Object.keys(errors).length > 0 || endMessage}
             class:error={Object.keys(errors).length > 0}
         >
-            {#each Object.entries(errors) as [type, messages]}
-                {#each messages as message}
-                    <p>{message}</p>
+            {#if Object.keys(errors).length > 0}
+                {#each Object.entries(errors) as [type, messages]}
+                    {#each messages as message}
+                        <p>{message}</p>
+                    {/each}
                 {/each}
-            {/each}
+            {/if}
+            {#if endMessage}
+                <p>{endMessage}</p>
+            {/if}
         </div>
-    {/if}
+    <!-- {/if} -->
     <div class="h-12 md:h-14 w-full border-b"></div>
     <div class="guess_board">
         <div class={`grid grid-rows-${maxRounds} gap-1.5`}>
