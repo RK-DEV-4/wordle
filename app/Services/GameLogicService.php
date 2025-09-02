@@ -111,4 +111,14 @@ class GameLogicService
     {
         return $this->maxRounds;
     }
+
+    public function setCurrentRound(int $newCurrentRound): void
+    {
+        $this->currentRound = $newCurrentRound;
+    }
+
+    public function setAnswer(string $answer): void
+    {
+        $this->answer = $answer;
+    }
 }

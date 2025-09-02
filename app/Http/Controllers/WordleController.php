@@ -24,6 +24,7 @@ class WordleController extends Controller
         return Inertia::render('Wordle', [
             'wordLength' => $wordLengths,
             'maxRounds' => $maxRounds,
+            'answer' => $game->getAnswer(),
         ]);
     }
 
@@ -45,6 +46,35 @@ class WordleController extends Controller
         return response()->json([
             'result' => $result,
             'currentRound' => $game->getCurrentRound(),
+            'isWin' => $game->isWin($guess),
+            'isLoss' => $game->isLoss($guess),
+            'endMessage' => $game->isWin($guess) 
+                ? $game->getWinResponse() 
+                : $game->getAnswer()
+        ]);
+    }
+
+    public function setCurrentRound(Request $request)
+    {
+        // Validate input in the event frontend request has been manipulated
+        $validated = $request->validate([
+            'guess' => ['required', 'string', 'alpha', 'size:5'],
+            'currentRound' => ['required', 'int'],
+            'answer' => ['required', 'string', 'alpha', 'size:5'],
+        ]);
+
+        $guess = strtoupper($validated['guess']);
+        $answer = strtoupper($validated['answer']);
+        $currentRound = $validated['currentRound'];
+
+        $game = session('game');
+
+        $game->setCurrentRound($currentRound);
+        $game->setAnswer($answer);
+
+        session(['game' => $game]);
+
+        return response()->json([
             'isWin' => $game->isWin($guess),
             'isLoss' => $game->isLoss($guess),
             'endMessage' => $game->isWin($guess) 

@@ -4,6 +4,7 @@
 
     export let wordLength = 5;
     export let maxRounds = 6;
+    export let answer;
     
     // An array of guesses as string
     let guesses = [];
@@ -54,6 +55,7 @@
         try {
             const { data } = await axios.post('/submit', {guess: currentGuess});
 
+            currentRound = data.currentRound;
             addResult(data.result);
 
             // check if game has ended after each submission
@@ -67,7 +69,6 @@
             endMessage = gameStatus ? data.endMessage : null
 
             currentGuess = '';
-            currentRound = data.currentRound;
         } catch (err) {
             if (err.response?.status === 422) {
                 errors = err.response.data.errors;
@@ -92,6 +93,9 @@
         const storageObject = {
             guesses: guesses,
             results: results,
+            currentRound: currentRound,
+            answer: answer,
+            gameStatus: gameStatus,
             expires: new Date().toDateString()
         };
         localStorage.setItem(storageKey, JSON.stringify(storageObject));
@@ -111,6 +115,37 @@
         }
         results = data.results;
         guesses = data.guesses;
+        currentRound = data.currentRound;
+        answer = data.answer;
+        gameStatus = data.gameStatus;
+        setCurrentRound();
+    }
+
+    async function setCurrentRound() {
+        try {
+            const { data } = await axios.post('/set-current-round', {guess: guesses[guesses.length - 1], currentRound: currentRound, answer: answer});
+
+            // check if game has ended after each submission
+            gameStatus = data.isWin 
+                ? 'win'
+                : (data.isLoss
+                    ? 'loss'
+                    : undefined
+                );
+            
+            endMessage = gameStatus ? data.endMessage : null
+
+            currentGuess = '';
+        } catch (err) {
+            if (err.response?.status === 422) {
+                errors = err.response.data.errors;
+                setTimeout(() => {
+                    errors = {}
+                }, 3000)
+            } else {
+                console.error(err);
+            }
+        }
     }
 
     function clearLocalStorage() {
@@ -128,24 +163,22 @@
 </script>
 
 <div class="main_container">
-    <!-- {#if Object.keys(errors).length > 0} -->
-        <div 
-            class="message_container"
-            class:!opacity-100={Object.keys(errors).length > 0 || endMessage}
-            class:error={Object.keys(errors).length > 0}
-        >
-            {#if Object.keys(errors).length > 0}
-                {#each Object.entries(errors) as [type, messages]}
-                    {#each messages as message}
-                        <p>{message}</p>
-                    {/each}
+    <div 
+        class="message_container"
+        class:!opacity-100={Object.keys(errors).length > 0 || endMessage}
+        class:error={Object.keys(errors).length > 0}
+    >
+        {#if Object.keys(errors).length > 0}
+            {#each Object.entries(errors) as [type, messages]}
+                {#each messages as message}
+                    <p>{message}</p>
                 {/each}
-            {/if}
-            {#if endMessage}
-                <p>{endMessage}</p>
-            {/if}
-        </div>
-    <!-- {/if} -->
+            {/each}
+        {/if}
+        {#if endMessage}
+            <p>{endMessage}</p>
+        {/if}
+    </div>
     <div class="h-12 md:h-14 w-full border-b"></div>
     <div class="guess_board">
         <div class={`grid grid-rows-${maxRounds} gap-1.5`}>

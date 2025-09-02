@@ -13,4 +13,6 @@ Route::controller(WordleController::class)
     Route::post('/submit', 'submit')
         ->name('.submit');
 
+    Route::post('/set-current-round', 'setCurrentRound')
+        ->name('.set-current-round');
 });
