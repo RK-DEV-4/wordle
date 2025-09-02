@@ -39,7 +39,7 @@ body,
 }
 
 .keyboard_key {
-    @apply min-w-7 md:min-w-11 h-14 flex items-center justify-center px-1.5 md:px-3 py-2 rounded font-bold uppercase bg-neutral-300 dark:bg-neutral-500 text-neutral-900 dark:text-neutral-100 font-bold;
+    @apply min-w-7 md:min-w-11 h-14 flex items-center justify-center px-1.5 md:px-3 py-2 rounded font-bold uppercase bg-neutral-300 dark:bg-neutral-500 text-neutral-900 dark:text-neutral-100 font-bold hover:opacity-90 transition-colors duration-100 ease-in;
 }
 
 .status_correct {

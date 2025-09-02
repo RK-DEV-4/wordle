@@ -10,7 +10,33 @@
 
     const emit = createEventDispatcher();
 
-    export let keyStates = {};
+    export let keyStates = [];
+    export let statuses;
+
+    let statusPriorty = {
+        "_": 1,
+        "?": 2,
+        "0": 3, 
+    };
+
+    let usedKeys = {};
+
+    $: keyStates, applyKeyStyling();
+
+    function applyKeyStyling() {
+        // Given a priority so that a correct positioned letter will always be green even it is placed in the wrong position in a later guess
+        setTimeout(() => {
+            const keysSortedByStatus = keyStates.flat().sort((a, b) => statusPriorty[b.value] - statusPriorty[a.value]);
+    
+            // reduce to object of letter: value
+            usedKeys = keysSortedByStatus.reduce((acc, {letter, value}) => {
+                if (!(letter in acc)) {
+                    acc[letter] = value;
+                }
+                return acc;
+            }, []);
+        }, 1000);
+    }
 
 </script>
 
@@ -19,7 +45,7 @@
         <div class="keyboard_row">
             {#each row as key}
                 <button
-                    class={`keyboard_key ${key.length > 1 ? "text-xs" : "text-xl"}`}
+                    class={`keyboard_key ${key.length > 1 ? "text-xs" : "text-xl"} status_${statuses[usedKeys?.[key]]}`}
                     on:click={() => emit('keyPress', key)}
                 >
                     {@html key}

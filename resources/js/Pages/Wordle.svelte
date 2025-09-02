@@ -116,6 +116,8 @@
         </div>
     </div>
     <ScreenKeyboard 
+        keyStates={results}
+        {statuses}
         on:keyPress={handleKeyDown}
     />
 </div>
