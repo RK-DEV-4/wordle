@@ -10,4 +10,7 @@ Route::controller(WordleController::class)
     Route::get('/', 'fetch')
         ->name('.home');
 
+    Route::post('/submit', 'submit')
+        ->name('.submit');
+
 });
